@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistem Pengisian Peminatan</title>
+    <link rel="icon" type="image/x-icon" href="assets/LOGO_UPN.png" />
+    <link href="css/styles.css" rel="stylesheet" />
+
+    <style>
+      /* Style untuk seluruh body */
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #a2c0fe;
+      }
+
+      /* Style untuk container form */
+      .container {
+        max-width: 500px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Style untuk header */
+      .header-container {
+        background-color: #1347d7;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 8px;
+        padding: 20px 0;
+        margin-bottom: 30px;
+      }
+
+      /* Style untuk judul */
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      /* Style untuk setiap form group */
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      /* Style untuk label form */
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      /* Style untuk input form */
+      .form-control {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      /* Style untuk checkbox group */
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Style untuk setiap item checkbox */
+      .checkbox-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Style untuk tombol submit */
+      .btn {
+        background-color: #007bff;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+      }
+
+      /* Style hover tombol submit */
+      .btn:hover {
+        background-color: #0056b3;
+      }
+
+      .upn-logo {
+        height: 50px; /* Atur tinggi logo sesuai kebutuhan */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Form -->
+      <div
+        class="header-container text-center d-flex flex-column justify-content-center align-items-center"
+      >
+        <img src="assets/LOGO_UPN.png" alt="UPN Logo" class="upn-logo" />
+        <h4 class="p-2 fw-bolder">
+          FORM PENGISIAN PEMINATAN KEAHLIAN FAKULTAS ILMU KOMPUTER UPN VETERAN
+          JAKARTA
+        </h4>
+      </div>
+
+      <!-- Form Kontrak Mata Kuliah -->
+      <form id="kontrakForm" onsubmit="return validateForm()">
+        <!-- Input NIM -->
+        <div class="form-group">
+          <label for="nim">NIM:</label>
+          <input
+            type="text"
+            id="nim"
+            name="nim"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Input Nama -->
+        <div class="form-group">
+          <label for="nama">Nama:</label>
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Input Semester Mahasiswa -->
+        <div class="form-group">
+          <label for="semester">Semester Mahasiswa:</label>
+          <input
+            type="text"
+            id="semester"
+            name="semester"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <!-- Pilihan Program Studi -->
+        <div class="form-group">
+          <label for="program_studi">Pilih Program Studi</label>
+          <select class="form-select" id="program_studi">
+            <option value="" selected>Pilih Program Studi</option>
+            <option value="D3 Sistem Informasi">D3 Sistem Informasi</option>
+            <option value="S1 Teknik Informatika">S1 Teknik Informatika</option>
+            <option value="S1 Sistem Informasi">S1 Sistem Informasi</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="peminatan_container">
+          <label id="peminatan_label">Peminatan Mahasiswa</label>
+          <div class="checkbox-group" id="checkboxes">
+            <!-- Checkbox akan ditambahkan otomatis oleh JavaScript -->
+          </div>
+        </div>
+
+        <!-- Tombol Submit -->
+        <div class="form-group">
+          <input type="submit" value="Kontrak" class="btn" />
+        </div>
+        <a class="btn btn-primary btn-lg" href="index.html">Kembali ke Home</a>
+      </form>
+    </div>
+
+    <!-- JavaScript untuk validasi form dan logika lainnya -->
+    <script>
+      // Fungsi validasi form
+      function validateForm() {
+        const nim = document.getElementById("nim").value;
+        const nama = document.getElementById("nama").value;
+        const semester = document.getElementById("semester").value;
+        const programStudi = document.getElementById("program_studi").value;
+        const kontrakMk = document.querySelectorAll(
+          'input[name="kontrak_mk"]:checked'
+        );
+        let totalSks = 0;
+
+        // Validasi input form
+        if (
+          nim === "" ||
+          nama === "" ||
+          semester === "" ||
+          programStudi === "" ||
+          kontrakMk.length === 0
+        ) {
+          alert("Semua input harus diisi dan pilih minimal 1 mata kuliah!");
+          resetForm();
+          return false;
+        }
+
+        // Validasi NIM harus angka
+        if (!/^\d+$/.test(nim)) {
+          alert("NIM harus berupa angka!");
+          document.getElementById("nim").value = "";
+          return false;
+        }
+
+        // Validasi Semester harus angka
+        if (!/^\d+$/.test(semester)) {
+          alert("Semester harus berupa angka!");
+          document.getElementById("semester").value = "";
+          return false;
+        }
+
+        // Validasi semester
+        if (parseInt(semester) <= 2) {
+          alert(
+            "Mahasiswa belum bisa mengajukan Peminatan! Harus Semester 2 ke atas."
+          );
+          return false;
+        }
+
+        // Menghitung total SKS berdasarkan mata kuliah yang dipilih
+        kontrakMk.forEach((mk) => {
+          totalSks += parseInt(mk.getAttribute("data-sks"));
+        });
+
+        let mkList = [];
+        kontrakMk.forEach((mk) => {
+          mkList.push(mk.value + " - " + mk.getAttribute("data-sks") + " SKS");
+        });
+
+        let mkString = mkList.join("<br>");
+
+        let data = {
+          nim: nim,
+          nama: nama,
+          programStudi: programStudi,
+          semester: semester,
+          mkList: mkList,
+          totalSks: totalSks,
+        };
+
+        // Membuka jendela baru untuk menampilkan data kontrak mata kuliah
+        openNewWindow(data);
+
+        return true;
+      }
+
+      // Fungsi untuk menghitung tahun masuk berdasarkan semester
+      function calculateYear(semester) {
+        let currentYear = new Date().getFullYear();
+        let isOddSemester = currentYear % 2 !== 0; // Ganjil atau Genap
+
+        if (isOddSemester && semester % 2 === 0) {
+          return currentYear;
+        } else if (!isOddSemester && semester % 2 !== 0) {
+          return currentYear;
+        } else {
+          return currentYear - Math.floor(parseInt(semester) / 2);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const programStudiSelect = document.getElementById("program_studi");
+        const checkboxesDiv = document.getElementById("checkboxes");
+        const peminatanLabel = document.getElementById("peminatan_label");
+        const peminatanContainer = document.getElementById(
+          "peminatan_container"
+        );
+
+        const checkboxes = {
+          "D3 Sistem Informasi": ["Mobile Programmer", "Web Developer"],
+          "S1 Teknik Informatika": ["Software Engineer", "Cyersecurity"],
+          "S1 Sistem Informasi": ["Data Engineer", "App Development"],
+        };
+
+        function generateCheckboxes(selectedProgramStudi) {
+          checkboxesDiv.innerHTML = ""; // Kosongkan isi checkboxesDiv
+
+          if (selectedProgramStudi) {
+            peminatanLabel.textContent = `Peminatan Mahasiswa ${selectedProgramStudi}`;
+            peminatanContainer.style.display = "block";
+
+            checkboxes[selectedProgramStudi].forEach((mk) => {
+              const checkboxItem = document.createElement("div");
+              checkboxItem.className = "checkbox-item";
+
+              checkboxItem.innerHTML = `
+              <label for="${mk}">${mk} - 3 SKS</label>
+              <input type="checkbox" id="${mk}" name="kontrak_mk" value="${mk}" data-sks="3" />
+          `;
+
+              checkboxesDiv.appendChild(checkboxItem);
+            });
+          } else {
+            peminatanLabel.textContent = "Peminatan Mahasiswa";
+            peminatanContainer.style.display = "none";
+          }
+        }
+
+        programStudiSelect.addEventListener("change", function () {
+          const selectedProgramStudi = programStudiSelect.value;
+          generateCheckboxes(selectedProgramStudi);
+        });
+
+        // Generate checkboxes saat halaman pertama kali dimuat
+        generateCheckboxes(programStudiSelect.value);
+      });
+
+      // Fungsi untuk membuka jendela baru dan menampilkan data kontrak mata kuliah
+      function openNewWindow(data) {
+        let win = window.open("", "_blank");
+        win.document.write("<!DOCTYPE html>");
+        win.document.write('<html lang="en">');
+        win.document.write("<head>");
+        win.document.write('<meta charset="UTF-8">');
+        win.document.write(
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+        );
+        win.document.write("<title>Data Kontrak MK</title>");
+        win.document.write('<link href="css/styles.css" rel="stylesheet">');
+        win.document.write("<style>");
+        win.document.write(`
+        /* Style untuk container */
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        /* Style untuk list */
+       ul {
+            list-style-type: disc; /* Gunakan disk sebagai bullet list */
+            padding-left: 20px;    /* Jarak dari kiri */
+        }
+
+        /* Style untuk list item */
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Style untuk logo */
+        .upn-logo {
+            height: 50px;
+            margin-right: 10px;
+        }
+    `);
+        win.document.write("</style>");
+        win.document.write("</head>");
+        win.document.write("<body>");
+
+        // Container
+        win.document.write('<div class="container">');
+        win.document.write(
+          '<div class="d-flex align-items-center justify-content-center">'
+        );
+        win.document.write(
+          '<img src="assets/LOGO_UPN.png" alt="Logo UPN" class="upn-logo">'
+        );
+        win.document.write(
+          "<h2 class='flex-grow-1'>Hasil Pengajuan Peminatan Mahasiswa</h2>"
+        );
+        win.document.write("</div>");
+        win.document.write("<p>NIM: <strong>" + data.nim + "</strong></p>");
+        win.document.write("<p>Nama: <strong>" + data.nama + "</strong></p>");
+        win.document.write(
+          "<p>Program Studi: <strong>" + data.programStudi + "</strong></p>"
+        );
+        win.document.write(
+          "<p>Tahun Masuk: " + calculateYear(data.semester) + "</p>"
+        );
+        win.document.write("<p>Mata kuliah yang dikontrak:</p><ul>");
+
+        data.mkList.forEach((mk) => {
+          win.document.write("<li>" + mk + "</li>");
+        });
+
+        win.document.write("</ul>");
+        win.document.write(
+          "<p>Jumlah SKS yang di kontrak: " + data.totalSks + " SKS</p>"
+        );
+
+        win.document.write("</div>");
+        win.document.write("</body>");
+        win.document.write("</html>");
+        win.document.close();
+      }
+
+      // Fungsi untuk mereset form
+      function resetForm() {
+        document.getElementById("nim").value = "";
+        document.getElementById("nama").value = "";
+        document.getElementById("semester").value = "";
+        document.getElementById("program_studi").value = ""; // Mengubah dari programStudi menjadi program_studi
+        const checkboxes = document.querySelectorAll(
+          'input[name="kontrak_mk"]'
+        );
+        checkboxes.forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+      }
+    </script>
+  </body>
+</html>
